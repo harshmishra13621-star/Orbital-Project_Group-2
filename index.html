@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group 2: Orbital Probability Project</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #f72585;
+            --bg: #f0f2f5;
+            --text: #2d3436;
+            --card-bg: #ffffff;
+            --accent: #3f37c9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header Style */
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            padding: 50px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; font-size: 2.5rem; font-weight: 700; letter-spacing: 1px; }
+        .subtitle { opacity: 0.9; margin-top: 10px; font-size: 1.2rem; }
+        .group-badge { 
+            background: rgba(255,255,255,0.2); 
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Simulation Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        /* Controls */
+        .control-panel label {
+            font-weight: 600;
+            display: block;
+            margin-top: 20px;
+            color: #4a4a4a;
+            font-size: 0.95rem;
+        }
+
+        input[type=range] { width: 100%; accent-color: var(--primary); margin-top: 8px; cursor: pointer; }
+        
+        button {
+            background: var(--primary); color: white; border: none;
+            padding: 14px; width: 100%; border-radius: 10px;
+            font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 25px;
+            transition: 0.2s; box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+        button:hover { background: #3046b5; transform: translateY(-2px); }
+
+        .stats-box {
+            background: #eef2ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border-left: 5px solid var(--primary);
+        }
+
+        /* Concept Cards */
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .concept-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border-top: 4px solid var(--secondary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .math-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            text-align: center;
+            margin: 10px 0;
+            border: 1px dashed #ccc;
+        }
+
+        /* --- NEW TEAM SECTION --- */
+        .team-section {
+            margin-top: 50px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .team-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .team-header h2 { color: var(--primary); margin-bottom: 5px; }
+        .team-header p { color: #666; margin: 0; }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .student-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 3px solid var(--accent);
+            transition: transform 0.2s;
+        }
+        
+        .student-card:hover { transform: translateY(-3px); background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .s-name { font-weight: 700; font-size: 0.9rem; color: #2d3436; text-transform: uppercase; }
+        .s-reg { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin: 2px 0; }
+        .s-email { font-size: 0.75rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        footer { text-align: center; padding: 40px; color: #888; font-size: 0.9rem; }
+
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="group-badge">GROUP 2 PROJECT</div>
+        <h1>Orbital Debris Risk Analyzer</h1>
+        <div class="subtitle">Geometric Probability & Monte Carlo Simulation</div>
+    </header>
+
+    <div class="container">
+        
+        <div class="main-grid">
+            <div class="control-panel card">
+                <h3 style="margin-top:0; color:var(--primary)">Simulation Controls</h3>
+                <p style="font-size:0.9rem; color:#666;">Adjust parameters to simulate satellite launches.</p>
+                
+                <label>Number of Satellites (N): <span id="n-val" style="color:var(--primary)">500</span></label>
+                <input type="range" id="n-input" min="100" max="2000" step="50" value="500">
+
+                <label>Debris Radius (R): <span id="r-val" style="color:var(--primary)">2.0</span></label>
+                <input type="range" id="r-input" min="1.0" max="4.5" step="0.1" value="2.0">
+
+                <button onclick="runSimulation()">🚀 Run Simulation</button>
+
+                <div class="stats-box">
+                    <h4 style="margin:0; color:#555">Results</h4>
+                    <p style="margin:10px 0;">Exp. Probability: <strong id="exp-prob" style="font-size:1.2rem; color:var(--secondary)">0%</strong></p>
+                    <p style="font-size:0.8rem; margin:0;">Theoretical: <span id="theory-prob">0%</span></p>
+                    <hr style="border:0; border-top:1px solid #d1d5db; margin:10px 0;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
+                        <span style="color:green">Safe: <b id="safe-count">0</b></span>
+                        <span style="color:red">Crashed: <b id="crash-count">0</b></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="min-height: 500px; padding:10px;">
+                <div id="plotDiv" style="width:100%; height:100%;"></div>
+            </div>
+        </div>
+
+        <h2 style="text-align:center; color:var(--text); margin-top:50px;">Mathematical Concepts</h2>
+        <div class="explanation-grid">
+            <div class="concept-card">
+                <h3>1. Sample Space (S)</h3>
+                <p>The total volume of space is represented by a cube of dimensions \(10 \times 10 \times 10\).</p>
+                <div class="math-block">$$ Vol(S) = 1000 \text{ units}^3 $$</div>
+            </div>
+            <div class="concept-card">
+                <h3>2. The Event (E)</h3>
+                <p>A collision occurs if a satellite falls inside the debris sphere of radius \(R\).</p>
+                <div class="math-block">$$ P(E) = \frac{\text{Vol(Sphere)}}{\text{Vol(Cube)}} $$</div>
+            </div>
+            <div class="concept-card">
+                <h3>3. Monte Carlo Method</h3>
+                <p>We rely on the <strong>Law of Large Numbers</strong>. By simulating thousands of random launches, the experimental result converges to the theoretical probability.</p>
+            </div>
+        </div>
+
+        <div class="team-section">
+            <div class="team-header">
+                <h2>Project Contributors</h2>
+                <p>Group 2 Members</p>
+            </div>
+            
+            <div class="team-grid">
+                <div class="student-card"><div class="s-name">Nikhil</div><div class="s-reg">24BCE10524</div><div class="s-email">nikhil.24bce10524@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Shubham Kumar</div><div class="s-reg">24BCE10560</div><div class="s-email">shubham.24bce10560@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Aradhya Mishra</div><div class="s-reg">24BCE10707</div><div class="s-email">aradhya.24bce10707@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Harshvardhan Bohra</div><div class="s-reg">24BCE10729</div><div class="s-email">harshvardhan.24bce10729@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Abhijeet Dhanotiya</div><div class="s-reg">24BCE10768</div><div class="s-email">abhijeet.24bce10768@vitbhopal.ac.in</div></div>
+                
+                <div class="student-card"><div class="s-name">Khengar Chaun</div><div class="s-reg">24BCE10801</div><div class="s-email">khengar.24bce10801@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Dhruv Chandwani</div><div class="s-reg">24BCE10804</div><div class="s-email">dhruv.24bce10804@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Gopalam Mohan Sai</div><div class="s-reg">24BCE10807</div><div class="s-email">gopalam.24bce10807@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Agastya C. Shrivastav</div><div class="s-reg">24BCE10818</div><div class="s-email">agastya.24bce10818@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Dharmik Yogesh Mehta</div><div class="s-reg">24BCE10829</div><div class="s-email">dharmik.24bce10829@vitbhopal.ac.in</div></div>
+                
+                <div class="student-card"><div class="s-name">Deep Ketankumar Modi</div><div class="s-reg">24BCE10877</div><div class="s-email">deep.24bce10877@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Suraj Darji</div><div class="s-reg">24BCE10931</div><div class="s-email">suraj.24bce10931@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Bathula Nidhi</div><div class="s-reg">24BCE10991</div><div class="s-email">bathula.24bce10991@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Harsh Mishra</div><div class="s-reg">24BCE11074</div><div class="s-email">harsh.24bce11074@vitbhopal.ac.in</div></div>
+                <div class="student-card"><div class="s-name">Vishesh Jain</div><div class="s-reg">24BCE11088</div><div class="s-email">vishesh.24bce11088@vitbhopal.ac.in</div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Probability Theory Module 1 Project | VIT Bhopal University</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", runSimulation);
+        
+        const nInput = document.getElementById('n-input');
+        const rInput = document.getElementById('r-input');
+        
+        nInput.oninput = () => document.getElementById('n-val').innerText = nInput.value;
+        rInput.oninput = () => document.getElementById('r-val').innerText = rInput.value;
+
+        function runSimulation() {
+            let N = parseInt(nInput.value);
+            let R = parseFloat(rInput.value);
+            let boxSize = 10;
+            let center = 5;
+
+            let xSafe = [], ySafe = [], zSafe = [];
+            let xCrash = [], yCrash = [], zCrash = [];
+            let crashes = 0;
+
+            for(let i=0; i<N; i++) {
+                let x = Math.random() * boxSize;
+                let y = Math.random() * boxSize;
+                let z = Math.random() * boxSize;
+
+                let dist = Math.sqrt(Math.pow(x-center,2) + Math.pow(y-center,2) + Math.pow(z-center,2));
+
+                if(dist <= R) {
+                    crashes++;
+                    xCrash.push(x); yCrash.push(y); zCrash.push(z);
+                } else {
+                    xSafe.push(x); ySafe.push(y); zSafe.push(z);
+                }
+            }
+
+            let expProb = (crashes / N) * 100;
+            let volSphere = (4/3) * Math.PI * Math.pow(R, 3);
+            let volCube = Math.pow(boxSize, 3);
+            let theoProb = (volSphere / volCube) * 100;
+
+            document.getElementById('exp-prob').innerText = expProb.toFixed(2) + "%";
+            document.getElementById('theory-prob').innerText = theoProb.toFixed(2) + "%";
+            document.getElementById('safe-count').innerText = N - crashes;
+            document.getElementById('crash-count').innerText = crashes;
+
+            let traceSafe = {
+                x: xSafe, y: ySafe, z: zSafe,
+                mode: 'markers',
+                marker: { size: 2, color: '#4361ee', opacity: 0.5 },
+                type: 'scatter3d', name: 'Safe'
+            };
+
+            let traceCrash = {
+                x: xCrash, y: yCrash, z: zCrash,
+                mode: 'markers',
+                marker: { size: 3, color: '#f72585', opacity: 0.9 },
+                type: 'scatter3d', name: 'Collision'
+            };
+
+            let traceCenter = {
+                x: [center], y: [center], z: [center],
+                mode: 'markers',
+                marker: { size: R*5, color: 'rgba(247, 37, 133, 0.2)', opacity: 0.1 }, 
+                type: 'scatter3d', showlegend: false, hoverinfo: 'skip'
+            };
+
+            let layout = {
+                margin: {l:0, r:0, b:0, t:0},
+                scene: {
+                    xaxis: {range:[0,10], title:''},
+                    yaxis: {range:[0,10], title:''},
+                    zaxis: {range:[0,10], title:''},
+                    aspectmode: 'cube'
+                },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                showlegend: true,
+                legend: {x: 0, y: 1}
+            };
+
+            Plotly.newPlot('plotDiv', [traceSafe, traceCrash, traceCenter], layout, {responsive: true, displayModeBar: false});
+        }
+    </script>
+</body>
+</html>
